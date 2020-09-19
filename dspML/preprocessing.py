@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np 
+import tensorflow as tf 
 from keras.utils import to_categorical 
-from skimage.transform import resize 
+from skimage.transform import downscale_local_mean 
 from sktime.forecasting.model_selection import temporal_train_test_split 
 
 
@@ -23,10 +24,21 @@ class image:
         X = np.expand_dims(X, axis=3)/255. 
         return X, y 
     
-    def greyscale(X, shape=(128, 128, 1)): 
+    def downsample(X, factors=(2, 2)): 
         for i in range(len(X)): 
-            X[i] = resize(X[i], output_shape=shape, mode='constant', preserve_range=True) 
+            X[i] = downscale_local_mean(X[i], factors) 
         return X 
+    
+    def reshape(X, size): 
+        return tf.image.resize(X, size).numpy()  
+    
+    def normalize_train(X): 
+        m, s = np.mean(X), np.std(X) 
+        X = (X - m) / s 
+        return X, [m, s] 
+    
+    def normalize_test(X, norm): 
+        return (X - norm[0]) / norm[1] 
 
 
 ''' For Sequences ''' 
@@ -69,6 +81,9 @@ class sequence:
     
     def normalize_test(x, norm): 
         return (x-norm[0])/norm[1] 
+    
+    def to_original_values(x, norm): 
+        return x * norm[1] + norm[0] 
     
     def temporal_split(x, fc_hzn): 
         x_train, x_test = temporal_train_test_split(x, test_size=fc_hzn) 

@@ -32,11 +32,10 @@ y_test = sequence.normalize_test(y_test, norm)
 time_steps = 5 
 x_train, y_train = sequence.xy_sequences(y, time_steps) 
 
-
-''' Recurrent Neural Network '''
+''' Convolutional Neural Network '''
 
 # define model 
-model = nnetfc.Recurrent() 
+model = nnetfc.Convolutional(time_steps) 
 model.summary() 
 
 # fit model 
@@ -63,7 +62,4 @@ plot.time_series_forecast(signal=y.iloc[-100:],
                           signal_test=y_test, 
                           p_forecast=y_pred, 
                           title='Humidity 7-Day Forecast') 
-
-
-
 

@@ -3,28 +3,34 @@
 """
 Time Series Forecasting 
 
-Data: Daily Climate Humidity Signal 
+Data: Daily Climate Wind Speed Signal 
 Model: Recurrent Neural Network 
 """
 
-from dspML import data, plot, utils 
+from dspML import data, plot 
 from dspML.preprocessing import sequence 
 from dspML.models.sequence import nnetfc 
 from dspML.evaluation import ForecastEval 
 
 
-''' Load Humidity Signal '''
+''' Load Wind Speed Signal '''
 
 # load signal 
-signal = data.Climate.humidity() 
-plot.signal_pd(signal, title='Daily Humidity Signal') 
-utils.ADF_test(signal) 
+signal = data.Climate.wind_speed() 
+plot.signal_pd(signal, title='Daily Wind Speed Signal') 
+
+# ACF/PACF 
+plot.p_acf(signal, lags=50)  
+
+#%%
 
 ''' Preprocess Signal '''
 
 # split and normalize data 
 fc_hzn = 7 
 y, y_test = sequence.temporal_split(signal, fc_hzn) 
+
+# normalize data 
 y, norm = sequence.normalize_train(y) 
 y_test = sequence.normalize_test(y_test, norm) 
 
@@ -32,16 +38,14 @@ y_test = sequence.normalize_test(y_test, norm)
 time_steps = 5 
 x_train, y_train = sequence.xy_sequences(y, time_steps) 
 
-
-''' Recurrent Neural Network '''
+''' Convolutional Neural Network '''
 
 # define model 
-model = nnetfc.Recurrent() 
+model = nnetfc.Convolutional(time_steps) 
 model.summary() 
 
 # fit model 
 _= nnetfc.fit(model, x_train, y_train, shuffle=True) 
-
 
 ''' Predict Forecast '''
 
@@ -62,8 +66,5 @@ fc_eval.mse()
 plot.time_series_forecast(signal=y.iloc[-100:], 
                           signal_test=y_test, 
                           p_forecast=y_pred, 
-                          title='Humidity 7-Day Forecast') 
-
-
-
+                          title='Wind Speed 7-Day Forecast') 
 

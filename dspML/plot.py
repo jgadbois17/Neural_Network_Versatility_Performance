@@ -7,7 +7,7 @@ import statsmodels.tsa.api as sm
 
 ''' Sequence '''
 
-def signal_pd(x, title='Signal', figsize=(14, 6), xlab='Time Units', ylab='Signal Value', 
+def signal_pd(x, title='Signal', figsize=(14,6), xlab='$t$', ylab='$X_t$', 
               rotation=0, yticks=None): 
     x.plot(figsize=figsize) 
     plt.title(title, size=16) 
@@ -16,8 +16,7 @@ def signal_pd(x, title='Signal', figsize=(14, 6), xlab='Time Units', ylab='Signa
     plt.grid(True) 
     plt.show() 
 
-def signal_np(x, title='Signal', figsize=(14, 6), xlab='Time Units', ylab='Signal Value', 
-              yticks=None): 
+def signal_np(x, title='Signal', figsize=(14,6), xlab='$t$', ylab='$X_t$', yticks=None): 
     plt.figure(figsize=figsize) 
     plt.plot(x) 
     plt.title(title, size=16) 
@@ -26,7 +25,32 @@ def signal_np(x, title='Signal', figsize=(14, 6), xlab='Time Units', ylab='Signa
     plt.grid(True) 
     plt.show() 
 
-def anomalies(x, idx_anomalies, figsize=(14, 6), title='Anomalous Indices', xlab='Time', 
+def p_acf(x, lags, figsize=(14,7)): 
+    fig = plt.figure(figsize=figsize) 
+    ax1 = fig.add_subplot(211) 
+    fig = sm.graphics.plot_acf(x, lags=lags, ax=ax1) 
+    ax2 = fig.add_subplot(212) 
+    fig = sm.graphics.plot_pacf(x, lags=lags, ax=ax2) 
+
+def time_series(signal, signal_test, p_forecast, title='Time Series', xlab='$t$', ylab='$X_t$'):
+    plt.plot(signal, '.-', label='observed') 
+    if signal_test is not None: 
+        plt.plot(signal_test, 'bx-', markersize=10, label='true forecast') 
+    if p_forecast is not None: 
+        plt.plot(p_forecast, 'ro-', label='predicted forecast') 
+    plt.title(title, size=16) 
+    plt.xlabel(xlab), plt.ylabel(ylab) 
+
+def time_series_forecast(signal, signal_test=None, p_forecast=None, 
+                         title='Time Series Forecast', figsize=(14, 7), 
+                         grid=True, loc=1): 
+    plt.figure(figsize=figsize) 
+    time_series(signal, signal_test, p_forecast, title) 
+    plt.grid(True) 
+    plt.legend(loc=loc) 
+    plt.show() 
+
+def anomalies(x, idx_anomalies, figsize=(14,6), title='Anomalous Indices', xlab='Time', 
               ylab='Machine Temperature', rotation=0): 
     plt.clf() 
     sub = x.iloc[idx_anomalies, :] 
@@ -36,24 +60,6 @@ def anomalies(x, idx_anomalies, figsize=(14, 6), title='Anomalous Indices', xlab
     plt.title(title, size=16) 
     plt.xlabel(xlab, size=12), plt.ylabel(ylab, size=12) 
     plt.xticks(rotation=rotation), plt.legend() 
-    plt.show() 
-
-def p_acf(x, lags, figsize=(14, 7)): 
-    fig = plt.figure(figsize=figsize) 
-    ax1 = fig.add_subplot(211) 
-    fig = sm.graphics.plot_acf(x, lags=lags, ax=ax1) 
-    ax2 = fig.add_subplot(212) 
-    fig = sm.graphics.plot_pacf(x, lags=lags, ax=ax2) 
-
-def forecast(y_true, preds, figsize=(14, 7), title='Predicted Forecast', xlab='Time', 
-             ylab='Value', rotation=0, yticks=None): 
-    plt.figure(figsize=figsize) 
-    plt.plot(y_true, color='red', label='Observed Values') 
-    plt.plot(preds, color='blue', label='Predicted Values') 
-    plt.title(title, size=20) 
-    plt.ylabel(ylab, size=16), plt.yticks(ticks=yticks) 
-    plt.xlabel(xlab, size=16), plt.xticks(rotation=rotation) 
-    plt.grid(True), plt.legend() 
     plt.show() 
 
 ''' Images '''
@@ -78,7 +84,7 @@ class kmnist:
             plt.title('Label {}'.format(self.y_train[rng]), size=16) 
         plt.tight_layout() 
     
-    def class_means(self, figsize=(14, 7)): 
+    def class_means(self, figsize=(12,7)): 
         n_class = np.unique(self.y_train) 
         plt.figure(figsize=figsize) 
         for i in range(10): 
@@ -95,7 +101,7 @@ class Nuclei:
         self.y = y 
         self.test = test 
     
-    def observations(self, cmap=None, figsize=(10, 10)): 
+    def observations(self, cmap=None, figsize=(10,10)): 
         plt.figure(figsize=figsize) 
         for i in range(3): 
             rng = np.random.randint(len(self.X)-1) 
@@ -107,7 +113,7 @@ class Nuclei:
             plt.title('Mask {}'.format(rng), size=16) 
         plt.tight_layout() 
     
-    def train_predictions(self, preds, cmap=None, figsize=(10, 5)): 
+    def train_predictions(self, preds, cmap=None, figsize=(10,5)): 
         idx = np.random.randint(len(self.X)-1) 
         plt.figure(figsize=figsize) 
         plt.subplot(1, 3, 1) 
@@ -152,9 +158,6 @@ def nuclei_test_preds_comparison(x, preds_u, preds_k, idx=[0, 1, 2]):
         plt.axis('off') 
         plt.title('K-Means Predicted Mask', size=14) 
     plt.tight_layout() 
-
-
-
 
 
 
