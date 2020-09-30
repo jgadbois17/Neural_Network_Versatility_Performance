@@ -5,13 +5,12 @@ import numpy as np
 import pandas as pd 
 from keras import Sequential, layers, optimizers 
 from keras.callbacks import EarlyStopping 
+from keras.models import load_model 
 
 def Recurrent(input_shape=(None, 1), name='Recurrent_Forecaster'): 
     model = Sequential(name=name) 
     model.add(layers.Input(shape=input_shape)) 
-    
     model.add(layers.GRU(units=20, return_sequences=True, name='GRU')) 
-    
     model.add(layers.TimeDistributed(layers.Dense(1), name='FC')) 
     model.compile(optimizer=optimizers.Adam(), loss='mse') 
     return model 
@@ -19,11 +18,9 @@ def Recurrent(input_shape=(None, 1), name='Recurrent_Forecaster'):
 def Convolutional(time_steps, input_shape=(None, 1), name='Convolutional_Forecaster'): 
     model = Sequential(name=name) 
     model.add(layers.Input(shape=input_shape)) 
-    
     model.add(layers.Conv1D(32, kernel_size=3, activation='relu', name='Conv1D')) 
     model.add(layers.MaxPool1D(2, padding='same', name='MaxPool')) 
     model.add(layers.Dense(time_steps, activation='sigmoid', name='Dense')) 
-    
     model.add(layers.TimeDistributed(layers.Dense(1), name='FC')) 
     model.compile(optimizer=optimizers.Adam(), loss='mse') 
     return model 
@@ -45,5 +42,17 @@ def predict_forecast(model, train, steps):
         train = np.append(train, pred[0][0]) 
     return pd.Series(forecast) 
 
+def load_humidity(recurrent=True): 
+    if recurrent: 
+        path = 'dspML/models/sequence/fitted/rnn_humidity.h5' 
+    else: 
+        path = 'dspML/models/sequence/fitted/cnn_humidity.h5' 
+    return load_model(path) 
 
+def load_wind_speed(recurrent=True): 
+    if recurrent: 
+        path = 'dspML/models/sequence/fitted/rnn_wind_speed.h5' 
+    else: 
+        path = 'dspML/models/sequence/fitted/cnn_wind_speed.h5' 
+    return load_model(path) 
 

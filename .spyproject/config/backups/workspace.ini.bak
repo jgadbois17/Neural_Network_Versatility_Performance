@@ -6,5 +6,5 @@ save_non_project_files = False
 
 [main]
 version = 0.2.0
-recent_files = ['dspML/utils.py', 'dspML/plot.py']
+recent_files = ['dspML/data.py', 'dspML/plot.py', 'dspML/utils.py', 'dspML/models/sequence/arima.py', 'dspML/models/sequence/nnetfc.py', 'exploratory/forecasting_trials/ARIMA_trial_1.py']
 

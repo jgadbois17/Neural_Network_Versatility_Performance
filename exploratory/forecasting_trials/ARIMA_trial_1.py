@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Time Series Forecasting 
-
-SARIMA 
+Time Series Forecasting: SARIMA 
 """
 
 from dspML import data, plot, utils 
@@ -20,9 +18,7 @@ import statsmodels.tsa.api as sm
 ''' Load and Explore Signal '''
 
 signal = data.Climate.humidity() 
-plot.signal_pd(signal, title='Humidity Time Series Signal') 
-plot.p_acf(signal, lags=40) 
-utils.ADF_test(signal) 
+plot.time_series_forecast(signal, title='Daily Humidity Time Series') 
 
 #%%
 
@@ -32,57 +28,66 @@ utils.ADF_test(signal)
 fc_hzn = 24 
 y_train, y_test = sequence.temporal_split(signal, fc_hzn) 
 
-plot.signal_pd(y_train, title='Humidity Train Signal') 
-plot.p_acf(y_train, lags=40) 
+plot.time_series_forecast(y_train, title='Daily Humidity Train Data') 
+plot.p_acf(y_train, lags=400) 
 utils.ADF_test(y_train) 
 
 #%%
 
-''' Auto-SARIMA | order=(1, 1, 1) | seasonal_order=(0, 1, 1, 12) | AIC=10749.049 '''
+''' Time Series Decomposition with Moving Averages '''
 
-model = arima.AutoARIMA(y_train) 
-model.plot_diagnostics(figsize=(12, 8)) 
-
-# model validation 
-arima.validation_forecast(model, y_train) 
-
-#%%
-
-''' SARIMA(2, 1, 1)x(0, 1, 1, 12) | AIC=10742.362 '''
-
-model = arima.ARIMA(y_train, order=(2,1,1), seasonal_order=(0,1,1,12)) 
-model.plot_diagnostics(figsize=(12, 8)) 
-
-# model validation 
-arima.validation_forecast(model, y_train) 
+decomp = sm.seasonal_decompose(y_train, model='multiplicative', period=365) 
+plt.rcParams.update({'figure.figsize':(14, 8)}) 
+decomp.plot() 
+plt.show() 
 
 #%%
 
-def rolling_forecast(y, fc_hzn, params): 
-    fc = [] 
-    for t in range(fc_hzn): 
-        model = sm.SARIMAX(y, order=params['order'], seasonal_order=params['seasonal_order']) 
-        model = model.fit() 
-        yhat = model.forecast()[0] 
-        y = y.append(yhat) 
-        fc.append(yhat) 
-    return pd.Series(fc) 
+''' Define Model '''
 
-def plot_forecast(y, fc): 
-    ax = y.plot(figsize=(14, 6), label='observed') 
-    fc.plot(ax=ax, label='forecast') 
-    ax.set_xlabel('Time', size=13) 
-    ax.set_ylabel('Values', size=13) 
-    ax.set_title('Forecast', size=17) 
-    plt.legend(), plt.show() 
+p = (1,0,0,1) 
+d = 0 
+q = (0,0,0,1,1,0,1,0,1) 
 
-# predict forecast 
-params = {'order':(2, 1, 1), 'seasonal_order':(0, 1, 1, 12)} 
-fc = rolling_forecast(y_train, fc_hzn, params) 
-fc.index = y_test.index 
+model = sm.SARIMAX(y_train, 
+                   order=(p, d, q), 
+                   seasonal_order=(0, 0, 0, 0), 
+                   enforce_stationarity=False, 
+                   enforce_invertibility=False) 
+
+fit = model.fit() 
+print(fit.summary()) 
+
+fit.plot_diagnostics(figsize=(14, 12)) 
+
+#%%
+
+y_pred = fit.forecast(steps=24) 
+fc_eval = ForecastEval(y_test, y_pred) 
+fc_eval.mse() 
 
 # plot forecast 
-plot_forecast(signal.loc['2017-01-01':], fc) 
+plot.time_series_forecast(signal=y_train.iloc[-200:], 
+                          signal_test=y_test, 
+                          p_forecast=y_pred, 
+                          title='Predicted Humidity Forecast') 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

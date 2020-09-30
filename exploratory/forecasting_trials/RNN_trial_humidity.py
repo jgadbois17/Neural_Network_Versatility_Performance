@@ -8,7 +8,7 @@ Recurrent Neural Network
 
 from dspML import data, plot, utils 
 from dspML.preprocessing import sequence 
-from dspML.models.sequence import fc_rnn as rnn 
+from dspML.models.sequence import nnetfc 
 from dspML.evaluation import ForecastEval 
 
 import numpy as np 
@@ -57,17 +57,17 @@ y, norm = sequence.normalize_train(y)
 y_test = sequence.normalize_test(y_test, norm) 
 
 # create sequences 
-time_steps = 3 
+time_steps = 14 
 x_train, y_train = sequence.xy_sequences(y, time_steps) 
 
 
 ''' Fit Model and Predict Forecast '''
 
 # fit model 
-_= rnn.fit(model, x_train, y_train) 
+_= nnetfc.fit(model, x_train, y_train) 
 
 # predict forecast 
-y_pred = rnn.predict_forecast(model, x_train, steps=fc_hzn) 
+y_pred = nnetfc.predict_forecast(model, x_train, steps=fc_hzn) 
 y_pred.index = y_test.index 
 
 # transform to original values 

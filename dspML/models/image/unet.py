@@ -41,7 +41,7 @@ def uNet(input_shape, loss, metrics, depth=4, base_filt_pow=6, lr=1e-3, name=Non
     model.compile(optimizer=optimizers.Adam(learning_rate=lr), loss=loss, metrics=metrics) 
     return model 
 
-def load_uNet(path): 
+def load_uNet(path='dspML/models/image/fitted/unet_fitted_model_2.h5'): 
     return load_model(path, custom_objects={'dice_coef':dice_coef, 'soft_dice':soft_dice}) 
 
 def pred_masks(model, X): 

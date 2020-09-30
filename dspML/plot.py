@@ -32,7 +32,8 @@ def p_acf(x, lags, figsize=(14,7)):
     ax2 = fig.add_subplot(212) 
     fig = sm.graphics.plot_pacf(x, lags=lags, ax=ax2) 
 
-def time_series(signal, signal_test, p_forecast, title='Time Series', xlab='$t$', ylab='$X_t$'):
+def time_series(signal, signal_test=None, p_forecast=None, 
+                title='Time Series', xlab='$t$', ylab='$X_t$'):
     plt.plot(signal, '.-', label='observed') 
     if signal_test is not None: 
         plt.plot(signal_test, 'bx-', markersize=10, label='true forecast') 

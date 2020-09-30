@@ -22,7 +22,6 @@ plot.signal_pd(signal, title='Daily Wind Speed Signal')
 # ACF/PACF 
 plot.p_acf(signal, lags=50)  
 
-#%%
 
 ''' Preprocess Signal '''
 

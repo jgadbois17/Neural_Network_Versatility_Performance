@@ -3,7 +3,6 @@
 
 from dspML import data, plot, utils 
 from dspML.preprocessing import sequence 
-from dspML.models.sequence import arima 
 from dspML.evaluation import ForecastEval 
 
 import numpy as np 
