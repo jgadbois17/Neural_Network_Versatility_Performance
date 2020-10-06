@@ -13,7 +13,6 @@ from dspML.preprocessing import image
 from dspML.models.image import lda 
 from dspML.evaluation import Classification 
 
-#%%
 
 ''' Load Data  '''
 

@@ -14,7 +14,6 @@ from dspML.preprocessing import image
 from dspML.models.image import cnn 
 from dspML import evaluation as ev 
 
-#%%
 
 ''' Load Data '''
 
@@ -30,7 +29,6 @@ n_classes = len(np.unique(y_test))
 X_train, y_train = image.classification_data_prep(X_train, y_train) 
 X_test,_ = image.classification_data_prep(X_test, y_test) 
 
-#%%
 
 ''' Convolutional Network '''
 

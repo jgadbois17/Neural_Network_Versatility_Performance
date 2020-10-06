@@ -160,6 +160,3 @@ def nuclei_test_preds_comparison(x, preds_u, preds_k, idx=[0, 1, 2]):
         plt.title('K-Means Predicted Mask', size=14) 
     plt.tight_layout() 
 
-
-
-

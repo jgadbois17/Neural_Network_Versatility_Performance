@@ -17,8 +17,8 @@ from dspML import evaluation as ev
 ''' Load Data '''
 
 # load data 
-X_train, y_train = data.load.Nuclei.train() 
-X_test = data.load.Nuclei.test() 
+X_train, y_train = data.Nuclei.train() 
+X_test = data.Nuclei.test() 
 
 # plot observations 
 plot = Nuclei(X_train, y_train, X_test) 

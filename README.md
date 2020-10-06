@@ -6,7 +6,9 @@ This repository contains code, data, and results for my thesis culminating activ
 * **Name:** Joseph (Joey) Gadbois 
 * **School:** California State University, Long Beach 
 * **Program:** Master's of Science, Applied Statistics 
+* **Expected Graduation:** January 2021
 
+***Note:*** All code is done in Python 3.7.
 
 ## Topic Information
 

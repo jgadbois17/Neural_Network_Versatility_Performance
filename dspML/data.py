@@ -74,7 +74,3 @@ def kmnist():
     return np.squeeze(X_train), y_train, np.squeeze(X_test), y_test 
 
 
-
-
-
-
