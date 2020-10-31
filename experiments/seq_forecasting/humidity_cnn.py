@@ -9,7 +9,7 @@ Model: Recurrent Neural Network
 
 from dspML import data, plot, utils 
 from dspML.preprocessing import sequence 
-from dspML.models.sequence import nnetfc 
+from dspML.models.sequence import nnf 
 from dspML.evaluation import ForecastEval 
 
 
@@ -29,23 +29,17 @@ y, norm = sequence.normalize_train(y)
 y_test = sequence.normalize_test(y_test, norm) 
 
 # create sequences 
-time_steps = 5 
+time_steps = 10 
 x_train, y_train = sequence.xy_sequences(y, time_steps) 
 
 ''' Convolutional Neural Network '''
 
-# define model 
-model = nnetfc.Convolutional(time_steps) 
+# load model 
+model = nnf.load_humidity(recurrent=False) 
 model.summary() 
 
-# fit model 
-_= nnetfc.fit(model, x_train, y_train, shuffle=True) 
-
-
-''' Predict Forecast '''
-
 # predict forecast 
-y_pred = nnetfc.predict_forecast(model, x_train, steps=fc_hzn) 
+y_pred = nnf.predict_forecast(model, x_train, steps=fc_hzn) 
 y_pred.index = y_test.index 
 
 # transform to original values 

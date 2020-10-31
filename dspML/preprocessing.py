@@ -4,11 +4,17 @@
 import numpy as np 
 import tensorflow as tf 
 from keras.utils import to_categorical 
+from sklearn.model_selection import train_test_split 
 from skimage.transform import downscale_local_mean 
 from sktime.forecasting.model_selection import temporal_train_test_split 
 
-
 ''' For Images '''
+
+def split_data(X, y, test_size, random_state=7, seed=7): 
+    np.random.seed(seed) 
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=test_size, random_state=random_state) 
+    return X_train, X_test, y_train, y_test 
 
 class image: 
     def flatten_data(X): 
@@ -39,7 +45,6 @@ class image:
     
     def normalize_test(X, norm): 
         return (X - norm[0]) / norm[1] 
-
 
 ''' For Sequences ''' 
 
@@ -88,12 +93,5 @@ class sequence:
     def temporal_split(x, fc_hzn): 
         x_train, x_test = temporal_train_test_split(x, test_size=fc_hzn) 
         return x_train, x_test 
-
-
-
-
-
-
-
 
 

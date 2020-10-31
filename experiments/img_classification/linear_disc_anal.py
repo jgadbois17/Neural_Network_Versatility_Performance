@@ -13,6 +13,7 @@ from dspML.preprocessing import image
 from dspML.models.image import lda 
 from dspML.evaluation import Classification 
 
+#%%
 
 ''' Load Data  '''
 
@@ -23,10 +24,15 @@ X_train, y_train, X_test, y_test = data.kmnist()
 plot = kmnist(X_train, y_train, X_test, y_test) 
 plot.train_observations() 
 
-# flatten data and normalize 
-X_train = image.flatten_data(X_train) / 255. 
-X_test = image.flatten_data(X_test) / 255. 
+# flatten images 
+X_train = image.flatten_data(X_train) 
+X_test = image.flatten_data(X_test) 
 
+# normalize images 
+X_train, norm = image.normalize_train(X_train) 
+X_test = image.normalize_test(X_test, norm) 
+
+#%%
 
 ''' Linear Discriminant Analysis '''
 
@@ -51,10 +57,13 @@ ev_test.accuracy()
 ev_test.confusion_matrix() 
 ev_test.classification_report() 
 
+#%%
 
+# plot of all classes 
+plot.all_classes() 
 
-
-
+# plot test predictions 
+plot.class_predictions(preds=yhat, idx=77) 
 
 
 

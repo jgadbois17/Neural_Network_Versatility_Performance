@@ -9,7 +9,7 @@ Model: Recurrent Neural Network
 
 from dspML import data, plot 
 from dspML.preprocessing import sequence 
-from dspML.models.sequence import nnetfc 
+from dspML.models.sequence import nnf 
 from dspML.evaluation import ForecastEval 
 
 
@@ -41,16 +41,16 @@ x_train, y_train = sequence.xy_sequences(y, time_steps)
 ''' Recurrent Neural Network '''
 
 # define model 
-model = nnetfc.Recurrent() 
+model = nnf.GRUNet() 
 model.summary() 
 
 # fit model 
-_= nnetfc.fit(model, x_train, y_train, shuffle=True) 
+_= nnf.fit(model, x_train, y_train, shuffle=True) 
 
 ''' Predict Forecast '''
 
 # predict forecast 
-y_pred = nnetfc.predict_forecast(model, x_train, steps=fc_hzn) 
+y_pred = nnf.predict_forecast(model, x_train, steps=fc_hzn) 
 y_pred.index = y_test.index 
 
 # transform to original values 

@@ -9,9 +9,10 @@ Model: Recurrent Neural Network
 
 from dspML import data, plot, utils 
 from dspML.preprocessing import sequence 
-from dspML.models.sequence import nnetfc 
+from dspML.models.sequence import nnetfc as nnf 
 from dspML.evaluation import ForecastEval 
 
+#%%
 
 ''' Load Humidity Signal '''
 
@@ -19,6 +20,8 @@ from dspML.evaluation import ForecastEval
 signal = data.Climate.humidity() 
 plot.signal_pd(signal, title='Daily Humidity Signal') 
 utils.ADF_test(signal) 
+
+#%%
 
 ''' Preprocess Signal '''
 
@@ -29,24 +32,17 @@ y, norm = sequence.normalize_train(y)
 y_test = sequence.normalize_test(y_test, norm) 
 
 # create sequences 
-time_steps = 5 
+time_steps = 30 
 x_train, y_train = sequence.xy_sequences(y, time_steps) 
-
 
 ''' Recurrent Neural Network '''
 
 # define model 
-model = nnetfc.Recurrent() 
+model = nnf.load_humidity(recurrent=True) 
 model.summary() 
 
-# fit model 
-_= nnetfc.fit(model, x_train, y_train, shuffle=True) 
-
-
-''' Predict Forecast '''
-
-# predict forecast 
-y_pred = nnetfc.predict_forecast(model, x_train, steps=fc_hzn) 
+# prediction 
+y_pred = nnf.predict_forecast(model, x_train, steps=fc_hzn) 
 y_pred.index = y_test.index 
 
 # transform to original values 
@@ -63,6 +59,7 @@ plot.time_series_forecast(signal=y.iloc[-100:],
                           signal_test=y_test, 
                           p_forecast=y_pred, 
                           title='Humidity 7-Day Forecast') 
+
 
 
 

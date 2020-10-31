@@ -6,5 +6,5 @@ save_non_project_files = False
 
 [main]
 version = 0.2.0
-recent_files = ['dspML/data.py', 'dspML/plot.py']
+recent_files = ['dspML/plot.py', 'dspML/models/image/kmeans.py', 'dspML/models/image/unet.py', 'experiments/img_segmentation/unet_seg.py']
 

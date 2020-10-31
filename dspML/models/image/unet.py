@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os 
 import numpy as np 
 from keras import Model, layers, optimizers 
 from keras.models import load_model 
+from keras.callbacks import EarlyStopping, ModelCheckpoint 
 from dspML.models.image.model_utils import (
     dice_coef, soft_dice, conv_block, pool, merge) 
-
 
 def uNet(input_shape, loss, metrics, depth=4, base_filt_pow=6, lr=1e-3, name=None, 
          activation='relu', kernel=(3,3), kernel_init='he_normal', pool_size=2): 
@@ -41,10 +42,19 @@ def uNet(input_shape, loss, metrics, depth=4, base_filt_pow=6, lr=1e-3, name=Non
     model.compile(optimizer=optimizers.Adam(learning_rate=lr), loss=loss, metrics=metrics) 
     return model 
 
-def load_uNet(path='dspML/models/image/fitted/unet_fitted_model_2.h5'): 
+def fit_model(model, path, X, y, batch_size=16, epochs=500, patience=15): 
+    if not os.path.exists('models/'): 
+        os.makedirs('models/') 
+    save = 'models/{}'.format(path) 
+    cb = [ModelCheckpoint(save, monitor='val_loss', mode='min', verbose=1, save_best_only=True), 
+          EarlyStopping(monitor='val_loss', patience=patience, restore_best_weights=True)] 
+    hist = model.fit(X, y, batch_size, epochs, callbacks=cb, validation_split=0.1, shuffle=True) 
+    return hist 
+
+def load_uNet(path='dspML/models/image/fitted/unet_fitted_model.h5'): 
     return load_model(path, custom_objects={'dice_coef':dice_coef, 'soft_dice':soft_dice}) 
 
-def pred_masks(model, X): 
+def predict_segmentation_masks(model, X): 
     preds = model.predict(X) 
     return (preds > 0.5).astype(np.uint8) 
 

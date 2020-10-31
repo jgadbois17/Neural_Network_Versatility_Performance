@@ -10,7 +10,6 @@ from keras.callbacks import EarlyStopping
 tfd = tfp.distributions 
 tfb = tfp.bijectors 
 
-
 def MADE(params, hidden_units=[10], event_shape=1): 
     made = tfb.AutoregressiveNetwork(params=params, hidden_units=hidden_units) 
     dist = tfd.TransformedDistribution(
@@ -40,9 +39,4 @@ def plot_random_sample(dist, n):
     plt.plot(x) 
     plt.title('Signal from Random Sample', size=16) 
     plt.tight_layout() 
-
-
-
-
-
 

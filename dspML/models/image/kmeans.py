@@ -5,7 +5,14 @@ import numpy as np
 from sklearn.cluster import KMeans 
 from skimage.transform import resize 
 
-def KMeans_segmentation(X, n_clusters=2): 
+def reshape_preds(preds): 
+    x = [] 
+    for i in range(len(preds)): 
+        img = resize(preds[i], (128, 128, 1), mode='constant', preserve_range=True) 
+        x.append(img) 
+    return np.array(x) 
+
+def predict_clusters(X, n_clusters=2): 
     shape = X[0].shape 
     preds = [] 
     for i in range(len(X)): 
@@ -15,12 +22,5 @@ def KMeans_segmentation(X, n_clusters=2):
         mask = mask.reshape(shape) 
         preds.append(mask) 
     preds = np.array(preds) 
-    return preds 
-
-def reshape_preds(preds): 
-    x = [] 
-    for i in range(len(preds)): 
-        img = resize(preds[i], (128, 128, 1), mode='constant', preserve_range=True) 
-        x.append(img) 
-    return np.array(x) 
+    return reshape_preds(preds) 
 

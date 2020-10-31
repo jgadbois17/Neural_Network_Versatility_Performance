@@ -6,13 +6,18 @@ from dspML.preprocessing import sequence
 from dspML.models.sequence import nnetfc as nnf 
 from dspML.evaluation import ForecastEval 
 
+import numpy as np 
+import pandas as pd 
+import matplotlib.pyplot as plt 
+from keras import Sequential, layers, optimizers 
+
 #%%
 
-''' Load Humidity Signal '''
+''' Wind Speed Time Series Signal '''
 
-# load signal 
-signal = data.Climate.humidity() 
-plot.time_series_forecast(signal, title='Daily Humidity Time Series') 
+# load and plot signal 
+signal = data.Climate.wind_speed() 
+plot.signal_pd(signal, title='Wind Speed Time Series') 
 
 #%%
 
@@ -30,12 +35,12 @@ y_test = sequence.normalize_test(y_test, norm)
 time_steps = 30 
 x_train, y_train = sequence.xy_sequences(y, time_steps) 
 
+#%%
 
 ''' Recurrent Network '''
 
 # define and fit model 
 model = nnf.GRUNet() 
-model.summary() 
 _= nnf.fit(model, x_train, y_train) 
 
 # prediction 
@@ -55,7 +60,12 @@ fc_eval.mse()
 plot.time_series_forecast(signal=y.iloc[-100:], 
                           signal_test=y_test, 
                           p_forecast=y_pred, 
-                          title='Humidity 7-Day Forecast') 
+                          title='Wind Speed 7-Day Forecast') 
+
+
+
+
+
 
 
 

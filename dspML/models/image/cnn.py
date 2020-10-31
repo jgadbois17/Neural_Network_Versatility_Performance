@@ -1,14 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Image Classification Model 
-
-Convolutional Neural Network 
-"""
 
 import numpy as np 
 from keras import Sequential, layers 
-
 
 def ConvNet(in_shape, n_classes, name=None): 
     model = Sequential(name=name) 

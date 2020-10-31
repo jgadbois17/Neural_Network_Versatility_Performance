@@ -2,27 +2,34 @@
 # -*- coding: utf-8 -*-
 """
 Anomaly Detection 
-
-Data: Machine Temperature Signal Resampled Every 30 Minutes 
-Model: Masked Autoencoder for Density Estimation 
 """
 
 import numpy as np 
-from dspML import data, plot 
+from dspML import data, plot, utils 
 from dspML.preprocessing import sequence 
-from dspML.models.sequence import made 
+from dspML.models.sequence import made, NormalHMM as HMM 
+from dspML.evaluation import f1_score 
 
 #%%
 
 ''' Load Signal '''
 
 # load signal 
-signal = data.machine_temperature().resample('30T').mean() 
+signal = data.machine_temperature() 
 plot.signal_pd(signal, title='Machine Temperature Signal', yticks=np.arange(10, 110, 10)) 
 
+# plot signal with threshold line 
+plot.signal_pd(
+    signal, title='Machine Temperature Signal', yticks=np.arange(10, 110, 10), thresh=47) 
+
+''' Preprocess Signal '''
+
 # train and test signal 
-signal_train = signal.loc['2013-12-18 00:00:00':'2014-01-24 23:30:00'] 
+signal_train = signal.loc['2013-12-18 00:00:00':'2014-01-24 23:55:00'] 
 signal_test = signal.loc['2014-02-01 00:00:00':] 
+
+# extract true test anomalies 
+anoms_true = utils.extract_anomalous_indices(signal_test, thresh=46) 
 
 # convert signals to numpy 
 x_train = sequence.to_numpy(signal_train) 
@@ -38,11 +45,10 @@ plot.signal_np(x_test, title='Normalized Test Signal')
 
 #%%
 
-''' MADE Autoregressive Network '''
+''' MADE '''
 
 # define model 
 model, dist = made.MADE(params=2) 
-model.summary() 
 
 # fit model 
 made.fit(model, x_train, epochs=100) 
@@ -58,9 +64,19 @@ plot.signal_np(x_test, title='Normalized Test Signal')
 plot.signal_np(px, title='Probability of Signal Values') 
 
 # let anomaly be observations with p(x) < 0.05 
-anoms = px < 0.05  
+anoms_pred = px < 0.05  
+
+# f1 score 
+f1_score(anoms_true, anoms_pred) 
 
 # plot anomalies 
-plot.anomalies(signal_test, anoms) 
+plot.anomalies(signal_test, anoms_pred) 
+
+
+
+
+
+
+
 
 

@@ -2,12 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np 
-import pandas as pd 
-import matplotlib.pyplot as plt 
 from sklearn import metrics 
 from sktime.performance_metrics.forecasting import smape_loss 
 from dspML.models.image.model_utils import dice_coef, soft_dice 
-
 
 ''' Image Classification '''
 
@@ -19,78 +16,55 @@ class Classification:
     def accuracy(self): 
         print('Accuracy: {}'.format(metrics.accuracy_score(self.y_true, self.y_pred))) 
     
+    def precision(self): 
+        print('Precision: {}'.format(metrics.precision_score(
+            self.y_true, self.y_pred, average='macro'))) 
+    
+    def recall(self): 
+        print('Recall: {}'.format(metrics.recall_score(
+            self.y_true, self.y_pred, average='macro'))) 
+    
+    def f1_score(self): 
+        print('F1-Score: {}'.format(metrics.f1_score(
+            self.y_true, self.y_pred, average='macro'))) 
+    
     def confusion_matrix(self): 
         print('Confusion Matrix:') 
         print(metrics.confusion_matrix(self.y_true, self.y_pred)) 
     
     def classification_report(self): 
         print('Classification Report:') 
-        print(metrics.classification_report(self.y_true, self.y_pred))  
-
-
-def compare_accuracy(y, lda_preds, cnn_preds): 
-    lda_acc = metrics.accuracy_score(y, lda_preds) 
-    cnn_acc = metrics.accuracy_score(y, cnn_preds) 
-    print('LDA Test Accuracy = {}'.format(lda_acc)) 
-    print('CNN Test Accuracy = {}'.format(cnn_acc)) 
-
+        print(metrics.classification_report(self.y_true, self.y_pred)) 
 
 ''' Image Segmentation '''
 
-def evaluate_unet(model, X_val, y_val, history): 
-    scores = model.evaluate(X_val, y_val) 
-    print(' ') 
-    print('Validation Loss:', scores[0]) 
-    print('Validation DICE:', scores[1]) 
-    print(' ') 
-    print('Plotting Loss and DICE Coefficient During Training:') 
-    pd.DataFrame(history.history).plot(figsize=(10, 6)) 
-    plt.grid(True) 
-    plt.gca().set_ylim(0, 1) 
-    plt.show() 
-
-class Segmentation: 
-    def __init__(self, y_true, y_pred): 
-        self.y_true = y_true 
-        self.y_pred = y_pred 
+class SegmentationMetrics: 
+    def __init__(self, X_train, y_train, X_test=None, y_test=None): 
+        self.X_train = X_train 
+        self.y_train = y_train 
+        self.X_test = X_test 
+        self.y_test = y_test 
     
-    def DICE(self): 
-        dice = dice_coef(self.y_true, self.y_pred).numpy() 
-        print('DICE Coefficient = {}'.format(dice)) 
+    def select_data(self, preds): 
+        if len(preds) == len(self.y_train): 
+            X = self.X_train 
+            y = self.y_train 
+            data = 'Train'
+        else: 
+            X = self.X_test 
+            y = self.y_test 
+            data = 'Test'
+        return X, y, data 
     
-    def soft_DICE(self): 
-        sd_loss = soft_dice(self.y_true, self.y_pred).numpy() 
-        print('Soft DICE Loss = {}'.format(sd_loss)) 
-
-class SegResults: 
-    def __init__(self, y_true, km_preds, unet_preds): 
-        self.km = Segmentation(y_true, km_preds) 
-        self.unet = Segmentation(y_true, unet_preds) 
+    def DiceCoefficient(self, preds): 
+        X, y, data = self.select_data(preds) 
+        dice = dice_coef(y, preds).numpy() 
+        print('{} Data Dice Coefficient = {}'.format(data, dice)) 
     
-    def DICE(self): 
-        print('\nDICE Coefficients:') 
-        print('K-Means = {}'.format(self.km.DICE()))  
-        print('U-Net   = {}'.format(self.unet.DICE())) 
-    
-    def Soft_DICE(self): 
-        print('\nSoft DICE Losses:') 
-        print('K-Means = {}'.format(self.km.soft_DICE())) 
-        print('U-Net   = {}'.format(self.unet.soft_DICE())) 
-
-def DICE_Coefficients(y, km, unet): 
-    dice_unet = dice_coef(y, unet) 
-    dice_km = dice_coef(y, km) 
-    print('\nDICE Coefficients:') 
-    print('K-Means = {}'.format(dice_km.numpy())) 
-    print('U-Net   = {}'.format(dice_unet.numpy())) 
-
-def Soft_DICE_Loss(y, km, unet): 
-    sd_unet = soft_dice(y, unet) 
-    sd_km = soft_dice(y, km) 
-    print('\nSoft DICE Losses:') 
-    print('K-Means = {}'.format(sd_km.numpy())) 
-    print('U-Net   = {}'.format(sd_unet.numpy())) 
-
+    def softDice_loss(self, preds): 
+        X, y, data = self.select_data(preds) 
+        loss = soft_dice(y, preds).numpy() 
+        print('{} Soft Dice Loss = {}'.format(data, loss)) 
 
 ''' Time Series Forecasting '''
 
@@ -108,15 +82,24 @@ class ForecastEval:
         print('SMAPE Loss = {}'.format(smape_loss(self.y_true, self.y_fc))) 
 
 
+''' Anomaly Detection '''
 
-
-
-
-
-
-
-
-
+class Detection: 
+    def __init__(self, anoms_true, anoms_pred): 
+        self.anoms_true = anoms_true 
+        self.anoms_pred = anoms_pred 
+    
+    def precision(self): 
+        print('Precision: {}'.format(metrics.precision_score(
+            self.anoms_true, self.anoms_pred, average='macro'))) 
+    
+    def recall(self): 
+        print('Recall: {}'.format(metrics.recall_score(
+            self.anoms_true, self.anoms_pred, average='macro'))) 
+    
+    def f1_score(self): 
+        f1 = metrics.f1_score(self.anoms_true, self.anoms_pred) 
+        print('F1-Score = {}'.format(np.around(f1, 4))) 
 
 
 
