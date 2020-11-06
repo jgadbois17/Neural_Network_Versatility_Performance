@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Image Classification 
-
 Data: KMNIST Handwritten Characters 
 Model: Linear Discriminant Analysis 
 """

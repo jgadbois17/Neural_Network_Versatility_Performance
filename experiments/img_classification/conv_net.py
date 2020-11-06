@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Image Classification 
-
 Data: KMNIST Handwritten Characters 
 Model: Convolutional Neural Network 
 """
@@ -42,7 +41,7 @@ model.summary()
 model.fit(X_train, y_train, epochs=10, validation_split=0.1, shuffle=True) 
 
 # train accuracy 
-_,train_accuracy = model.evaluate(X_train, y_train) 
+_, train_accuracy = model.evaluate(X_train, y_train) 
 
 # test predictions 
 yhat = cnn.predictions(model, X_test) 

@@ -3,7 +3,7 @@
 """
 Image Segmentation 
 Data: Nuclei Data | Kaggle Data Science Bowl 2018 
-Model: K-Means Clustering 
+Model: U-Net Fully Convolutional Network 
 """
 
 from dspML import data 

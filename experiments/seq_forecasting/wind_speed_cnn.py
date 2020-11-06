@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Time Series Forecasting 
-
 Data: Daily Climate Wind Speed Signal 
 Model: Recurrent Neural Network 
 """

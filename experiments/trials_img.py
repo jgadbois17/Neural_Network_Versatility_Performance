@@ -3,30 +3,41 @@
 
 import numpy as np 
 import matplotlib.pyplot as plt 
-from skimage import color, feature, filters, segmentation, measure 
+
 from dspML import data 
+from dspML.plot import kmnist 
+from dspML.preprocessing import image 
+from dspML.models.image import cnn, lda 
+from dspML.evaluation import Classification 
 
 #%%
 
-''' Nuclei Data '''
+''' Linear Discriminant Analysis '''
 
-X, y = data.Nuclei.train() 
+# load data 
+X_train, y_train, X_test, y_test = data.kmnist() 
+
+# preprocessing data 
+X_train = image.flatten_data(X_train) 
+X_train, norm = image.normalize_train(X_train) 
+X_test = image.flatten_data(X_test) 
+X_test = image.normalize_test(X_test, norm) 
+
+# define model and get predictions 
+model_lda = lda.LDA(X_train, y_train) 
+preds_lda = model_lda.predict(X_test) 
 
 #%%
 
-def plot_img(x, cmap='gray'): 
-    plt.imshow(x, cmap=cmap) 
-    plt.axis('off') 
+''' Convolutional Neural Network '''
 
-#%%
+# load data 
+X_train, y_train, X_test, y_test = data.kmnist() 
 
-# extract image 
-idx = np.random.randint(len(X)) 
-img = color.rgb2gray(X[idx]) 
-
-plt.hist(img) 
-plt.show() 
-
+# preprocessing data 
+n_classes = len(np.unique(y_test)) 
+X_train, y_train = image.classification_data_prep(X_train, y_train) 
+X_test,_ = image.classification_data_prep(X_test, y_test) 
 
 
 
