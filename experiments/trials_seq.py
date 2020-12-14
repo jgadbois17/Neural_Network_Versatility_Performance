@@ -1,80 +1,73 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from dspML import data, plot 
-from dspML.preprocessing import sequence 
-from dspML.models.sequence import nnetfc as nnf 
-from dspML.evaluation import ForecastEval 
-
 import numpy as np 
-import pandas as pd 
-import matplotlib.pyplot as plt 
-from keras import Sequential, layers, optimizers 
-from keras.callbacks import EarlyStopping 
+from dspML import data, plot, utils 
+from dspML.preprocessing import sequence 
+from dspML.models.sequence import made 
+from dspML.evaluation import Detection 
 
 #%%
 
-''' Load Humidity Signal '''
+''' Load Signal '''
 
 # load signal 
-signal = data.Climate.humidity() 
-plot.time_series_forecast(signal, title='Daily Humidity Time Series') 
+signal = data.machine_temperature() 
+plot.signal_pd(signal, title='Machine Temperature Signal Anomaly Threshold', 
+               yticks=np.arange(10, 110, 10), thresh=47) 
+
+# train and test signal 
+signal_train = signal.loc['2013-12-18 00:00:00':'2014-01-24 23:55:00'] 
+signal_test = signal.loc['2014-02-01 00:00:00':] 
+
+# extract true test anomalies and plot 
+anoms_true = utils.extract_anomalous_indices(signal_test, thresh=47) 
+plot.anomalies(signal_test, anoms_true) 
+
+# convert signals to numpy 
+x_train = sequence.to_numpy(signal_train) 
+x_test = sequence.to_numpy(signal_test) 
+
+# normalize signals 
+x_train, norm = sequence.normalize_train(x_train) 
+x_test = sequence.normalize_test(x_test, norm) 
+
+# plot normalized signals 
+plot.signal_np(x_train, title='Normalized Train Signal') 
+plot.signal_np(x_test, title='Normalized Test Signal') 
 
 #%%
 
-''' Preprocessing '''
-
-# split data - save last 7 days for forecast 
-fc_hzn = 7 
-y, y_test = sequence.temporal_split(signal, fc_hzn) 
-
-# normalize series 
-y, norm = sequence.normalize_train(y) 
-y_test = sequence.normalize_test(y_test, norm) 
-
-# create sequences 
-time_steps = 30 
-x_train, y_train = sequence.xy_sequences(y, time_steps) 
-
-
-''' GRU Network '''
-
-def GRUNet(input_shape=(None, 1), name='GRU_Recurrent_Network'):
-    model = Sequential(name=name) 
-    model.add(layers.Input(shape=input_shape)) 
-    model.add(layers.GRU(32, return_sequences=True)) 
-    model.add(layers.GRU(64, return_sequences=False)) 
-    model.add(layers.Dense(1)) 
-    model.compile(loss='mse', optimizer=optimizers.Adam()) 
-    return model 
+''' MADE Autoregressive Network '''
 
 # define model 
-model = GRUNet() 
+model, dist = made.MADE(params=2) 
 model.summary() 
+
+# fit model 
+made.fit(model, x_train, epochs=1) 
+
+# plot random sample 
+made.plot_random_sample(dist, n=1000) 
+
+# test probabilities 
+px = dist.prob(x_test).numpy() 
 
 #%%
 
-# fit model 
-_= nnf.fit(model, x_train, y_train, patience=25) 
+# plot observations and their probabilities 
+plot.signal_np(x_test, title='Normalized Test Signal') 
+plot.signal_np(px, title='Probability of Signal Values') 
 
-# prediction 
-y_pred = nnf.predict_forecast(model, x_train, steps=fc_hzn) 
-y_pred.index = y_test.index 
+# let anomaly be observations with p(x) < 0.05 
+anoms_pred = px < 0.05  
 
-# transform to original values 
-y = sequence.to_original_values(y, norm) 
-y_test = sequence.to_original_values(y_test, norm) 
-y_pred = sequence.to_original_values(y_pred, norm) 
+# evaluation 
+met = Detection(anoms_true, anoms_pred) 
+met.recall() 
+met.precision() 
+met.f1_score() 
 
-# evaluate model 
-fc_eval = ForecastEval(y_test, y_pred) 
-fc_eval.mse() 
-
-# plot forecast 
-plot.time_series_forecast(signal=y.iloc[-100:], 
-                          signal_test=y_test, 
-                          p_forecast=y_pred, 
-                          title='Humidity 7-Day Forecast') 
-
-
+# plot anomalies 
+plot.anomalies(signal_test, anoms_pred) 
 
