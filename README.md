@@ -1,18 +1,17 @@
 # Neural Network Versatility and Performance 
 
-This repository contains code, data, and results for my thesis culminating activity to satisfy requirements for my current graduate program. 
+This repository contains code, data, and results for my thesis culminating activity to satisfy requirements for my graduate program. 
 
-* **Title:** The Versatility and Performance of Neural Networks for Digital Signal Data 
+* **Title:** [The Versatility and Performance of Neural Networks for Digital Signal Data](https://www.etdadmin.com/student/mylist?siteId=675&submissionId=783560)
 * **Name:** Joseph (Joey) Gadbois 
 * **School:** California State University, Long Beach 
 * **Program:** Master's of Science, Applied Statistics 
-* **Expected Graduation:** January 2021
 
-***Note:*** All code is done in Python 3.7.
+***Note:** All code is done in Python 3.7.*
 
 ## Topic Information
 
-The thesis topic is to show how versatile different architectures of neural networks are and how well they perform in comparison to traditional statistical methods for digital signal data. The two specific types of data used are image data and one-dimensional sequential data and the experimental projects include image classification, image segmentation, time series forecasting, and anomaly detection. The models implemented for each task are provided below. 
+The topic considers the versatility of neural networks and various architectures and their performance in comparison to traditional statistical models for digital signal data. The two specific types of data used are image data and one-dimensional sequential data and the experimental projects include image classification, image segmentation, time series forecasting, and anomaly detection. The models implemented for each task are provided below. 
 
 * **Image Classification:** Linear Discriminant Analysis, Convolutional Neural Network 
 * **Image Segmentation:** K-Means Clustering, U-Net Fully Convolutional Network 
